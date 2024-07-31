@@ -8,7 +8,7 @@ import filesToStudies from './filesToStudies';
 
 import { extensionManager } from '../../App.tsx';
 
-import { Icon, Button, LoadingIndicatorProgress } from '@ohif/ui';
+import { Icon, Button, LoadingIndicatorProgress, Input } from '@ohif/ui';
 
 const getLoadButton = (onDrop, text, isDir) => {
   return (
@@ -51,6 +51,7 @@ function Local({ modePath }: LocalProps) {
   const navigate = useNavigate();
   const dropzoneRef = useRef();
   const [dropInitiated, setDropInitiated] = React.useState(false);
+  const [fileUrl, setFileUrl] = React.useState('');
 
   // Initializing the dicom local dataSource
   const dataSourceModules = extensionManager.modules[MODULE_TYPES.DATA_SOURCE];
@@ -100,6 +101,12 @@ function Local({ modePath }: LocalProps) {
 
     navigate(`/${modePath}?${decodeURIComponent(query.toString())}`);
   };
+
+  const loadFileUrl = async () => {
+    const response = await fetch(fileUrl);
+    const blob = await response.blob();
+    await onDrop([blob]);
+  }
 
   // Set body style
   useEffect(() => {
@@ -152,6 +159,34 @@ function Local({ modePath }: LocalProps) {
               <div className="flex justify-around pt-4 ">
                 {getLoadButton(onDrop, 'Load files', false)}
                 {getLoadButton(onDrop, 'Load folders', true)}
+              </div>
+              <div className="space-y-2 pt-4 text-center">
+                <div className="space-y-2">
+                  <div className="text-lg text-blue-300">
+                    You can also provide the URL to a DICOM file to load:
+                  </div>
+                  <div className="flex justify-around pt-4 ">
+                    <Input
+                      className="border-primary-main bg-black"
+                      type="text"
+                      onChange={evt => setFileUrl(evt.target.value)}
+                      onKeyPress={(event) => {
+                        if (event.key === 'Enter') {
+                          loadFileUrl();
+                        }
+                      }}
+                    />
+                    <Button
+                      rounded="full"
+                      variant="contained" // outlined
+                      disabled={false}
+                      endIcon={<Icon name="launch-arrow" />} // launch-arrow | launch-info
+                      className={classnames('font-medium', 'ml-2')}
+                      onClick={loadFileUrl}>
+                        Load url
+                      </Button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
