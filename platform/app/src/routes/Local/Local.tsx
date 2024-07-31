@@ -139,7 +139,7 @@ function Local({ modePath }: LocalProps) {
                 ) : (
                   <div className="space-y-2">
                     <p className="text-base text-blue-300">
-                      Note: You data is not uploaded to any server, it will stay in your local
+                      Note: Your data is not uploaded to any server, it will stay in your local
                       browser application
                     </p>
                     <p className="text-xg text-primary-active pt-6 font-semibold">
